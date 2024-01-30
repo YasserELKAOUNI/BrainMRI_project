@@ -120,7 +120,6 @@ model = tf.keras.Sequential([
        Dropout(0.2),
        Flatten(), 
        Dense(256, activation='relu'),
-       Dropout(0.5),
        Dense(2, activation='softmax')]
        )
        
@@ -164,3 +163,88 @@ plt.legend(frameon=False, fontsize=12)
 plt.grid(ls='--')
 plt.tight_layout()
 plt.show()
+
+# costruction de la matrice de confusion 
+
+# extraction des données test du fichier "testing "
+
+path_test_dir ="/Users/elkaouniyasser/Brain_project/Brain_data/Testing"
+categories = os.listdir(path_test_dir)  #
+data_Testing=[]
+
+
+desired_size=(256,256)
+images_Testing=[]
+True_labels=[]
+for category in categories:
+    path_of_label=os.path.join(path,category)
+    if os.path.isdir(path_of_label):
+        
+        for fichier in os.listdir(path_of_label):
+            
+            path_fichier=os.path.join(path_of_label,fichier)
+            
+            img = Image.open(os.path.join(path_of_label, fichier))
+
+            img = img.resize(desired_size) 
+            if img.mode != 'L':
+                img = img.convert('L')
+
+            img_array = np.array(img)
+
+            images_Testing.append(img_array)
+            
+            if os.path.isfile(path_fichier):
+                label=extraire_label(fichier)
+                True_labels.append(label)
+                if label:
+                    data_Testing.append((img_array,label,fichier))
+        
+images_Testing = np.array(images_Testing)
+
+images_Testing=images_Testing/255.0
+True_labels=labels_monocalsses(True_labels)
+
+labels_tests_array = np.array(True_labels).reshape(-1, 1)
+
+
+
+# encodage  one-hot , vecteur de 2 labels 
+encoder = OneHotEncoder(sparse=False)
+y_Testing = encoder.fit_transform(labels_tests_array)
+
+
+# prédiction 
+
+
+y_pred_prob = model.predict(images_Testing)
+y_pred = (y_pred_prob > 0.5).astype(np.float64) 
+
+
+#Confusion 
+
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
+conf_matrix = confusion_matrix(y_Testing.argmax(axis=1), y_pred.argmax(axis=1))
+
+plt.figure(figsize=(8, 6))
+sns.heatmap(
+    conf_matrix,
+    annot=True,
+    fmt='d',
+    cmap='Blues',
+    cbar=True,
+    xticklabels=['Predicted 0', 'Predicted 1'],
+    yticklabels=['Actual 0', 'Actual 1'],
+    linewidths=.5,
+    square=True,
+    annot_kws={"fontsize": 14},
+)
+plt.title('Confusion Matrix', fontsize=16)
+plt.xlabel('Predicted', fontsize=14)
+plt.ylabel('Actual', fontsize=14)
+plt.show()
+
