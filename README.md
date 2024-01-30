@@ -18,6 +18,8 @@ The dataset used in this project can be found on Kaggle. You can access it [here
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-project.git
-cd your-project
+git clone https://github.com/YasserELKAOUNI/BrainMRI_project
+cd BrainMRI_project
+
+
 
