@@ -12,52 +12,17 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 
 
+
+
+from CNN_monoclasses import extraire_label , charger_data_et_labels
+
+
 path="/Users/elkaouniyasser/Brain_project/Brain_data/Training"
-categories = os.listdir(path)  #
-data=[]
-def extraire_label(file_name):
-    # le label est toujours situé entre '-' et '_'
-    parts = file_name.split('-')
-    if len(parts) > 1:
-        label_part = parts[1]
-        label = label_part.split('_')[0]
-        return label
-    else:
-        return None
-    
-    
-desired_size=(256,256)
-images_=[]
-labels_=[]
-for category in categories:
-    path_of_label=os.path.join(path,category)
-    if os.path.isdir(path_of_label):
-        
-        for fichier in os.listdir(path_of_label):
-            
-            path_fichier=os.path.join(path_of_label,fichier)
-            
-            img = Image.open(os.path.join(path_of_label, fichier))
-
-            img = img.resize(desired_size) 
-            if img.mode != 'L':
-                img = img.convert('L')
-
-            img_array = np.array(img)
-
-            images_.append(img_array)
-            
-            if os.path.isfile(path_fichier):
-                label=extraire_label(fichier)
-                labels_.append(label)
-                if label:
-                    data.append((img_array,label,fichier))
-        
-images = np.array(images_)
 #data[1]
-
+images,labels_=charger_data_et_labels(path)
 image = Image.fromarray(images[0])
 image.show()
+
 
 def index_finder(liste, name: str):
     bad_label = []
@@ -154,8 +119,6 @@ history=model.history
 
 
 
-for layer in model.layers:
-    print(layer.name)
 
 
 # garphique

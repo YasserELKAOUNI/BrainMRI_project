@@ -44,39 +44,47 @@ def labels_monocalsses(liste_labels):
 
 
 
+from typing import Callable
 
-
-desired_size=(256,256)
-images_=[]
-labels_=[]
-for category in categories:
-    path_of_label=os.path.join(path,category)
-    if os.path.isdir(path_of_label):
-        
-        for fichier in os.listdir(path_of_label):
+def charger_data_et_labels(path_dossier_central, label_manager=None, taille_image=(256, 256), filtre='L'):
+    
+    categories = os.listdir(path_dossier_central) 
+    desired_size=taille_image #taille_image
+    images_=[]
+    labels_=[]
+    data=[]
+    for category in categories:
+        path_of_label=os.path.join(path,category)
+        if os.path.isdir(path_of_label):
             
-            path_fichier=os.path.join(path_of_label,fichier)
+            for fichier in os.listdir(path_of_label):
+                
+                path_fichier=os.path.join(path_of_label,fichier)
+                
+                img = Image.open(os.path.join(path_of_label, fichier))
+    
+                img = img.resize(desired_size) 
+                if img.mode != filtre:
+                    img = img.convert(filtre)
+    
+                img_array = np.array(img)
+    
+                images_.append(img_array)
+                
+                if os.path.isfile(path_fichier):
+                    label=extraire_label(fichier)
+                    labels_.append(label)
+                    if label:
+                        data.append((img_array,label,fichier))
             
-            img = Image.open(os.path.join(path_of_label, fichier))
-
-            img = img.resize(desired_size) 
-            if img.mode != 'L':
-                img = img.convert('L')
-
-            img_array = np.array(img)
-
-            images_.append(img_array)
-            
-            if os.path.isfile(path_fichier):
-                label=extraire_label(fichier)
-                labels_.append(label)
-                if label:
-                    data.append((img_array,label,fichier))
-        
-images = np.array(images_)
+    images = np.array(images_)
+    if label_manager :
+        labels_=label_manager(labels_)
+    return images,labels_
 
 
-labels_=labels_monocalsses(labels_)
+images,labels_=charger_data_et_labels(path,labels_monocalsses)
+
 
 from sklearn.preprocessing import OneHotEncoder
 
@@ -262,7 +270,6 @@ y_pred = (y_pred_prob > 0.5).astype(np.float64)
 
 #Confusion 
 
-from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
 
