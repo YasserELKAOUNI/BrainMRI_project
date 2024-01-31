@@ -12,10 +12,11 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D,AveragePooling2D, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Conv2D, BatchNormalization, Dropout, Flatten, Dense, Activation
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 import matplotlib.pyplot as plt
 
 
@@ -100,7 +101,7 @@ subset_size = int(len(shuffled_images) * 0.2)
 
 
 images_train, images_test, labels_train, labels_test = train_test_split(
-    shuffled_images[:subset_size], shuffled_labels[:subset_size], test_size=0.2, random_state=42
+    shuffled_images[:subset_size], shuffled_labels[:subset_size], test_size=0.2
 )
 
 # Normalisation 
@@ -113,13 +114,14 @@ images_test = images_test / 255.0
 model = tf.keras.Sequential([
        Conv2D(32, (3, 3), activation='relu', input_shape=(256, 256, 1)),
        MaxPooling2D(2, 2),
-       Conv2D(64, (3, 3), activation='relu',padding='same'),
+       Conv2D(64, (3, 3), activation='relu',padding='valid'),
        MaxPooling2D(2, 2),
-       Conv2D(64, (3, 3), activation='relu',padding='same'),
-       MaxPooling2D(2, 2),
-       Dropout(0.2),
+       Conv2D(128, (3, 3), activation='relu',padding='same'),
+       AveragePooling2D(2,2),
+       Dropout(0.3),
        Flatten(), 
        Dense(256, activation='relu'),
+       Dropout(0.5),
        Dense(2, activation='softmax')]
        )
        
@@ -136,8 +138,7 @@ history=model.history
 
 
 
-
-# garphique
+'''  Graphiques de la fonction de perte et la précision   '''
 
 plt.plot(history.history['loss'], label='Training Loss')
 #plt.plot(history.history['val_loss'], label='Validation Loss')
@@ -164,7 +165,45 @@ plt.grid(ls='--')
 plt.tight_layout()
 plt.show()
 
-# costruction de la matrice de confusion 
+
+
+
+''' Prédiction et Matrice de Confusion : Data de validation '''
+
+
+
+predictions = model.predict(images_test)
+
+predicted_labels = np.argmax(predictions, axis=1)
+
+true_labels = np.argmax(labels_test, axis=1)
+
+# Confusion matrix
+conf_matrix = confusion_matrix(true_labels, predicted_labels)
+
+# Print confusion matrix
+print("Confusion Matrix:")
+print(conf_matrix)
+
+# Classification report
+class_report = classification_report(true_labels, predicted_labels)
+
+# Print classification report
+print("\nClassification Report:")
+print(class_report)
+
+
+
+
+
+
+
+
+
+
+''' Fichier  TESTING '''
+
+''' costruction de la matrice de confusion '''
 
 # extraction des données test du fichier "testing "
 
