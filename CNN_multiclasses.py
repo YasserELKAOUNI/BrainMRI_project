@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+@author: elkaouniyasser
+"""
+
 import os
 from PIL import Image
 import numpy as np
@@ -5,16 +12,20 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D,AveragePooling2D, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Conv2D, BatchNormalization, Dropout, Flatten, Dense, Activation
+from keras.callbacks import ModelCheckpoint
+from tensorflow.keras.layers import  BatchNormalization, Dropout, Activation
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 import matplotlib.pyplot as plt
 
 
 
+import fonctions_preprocessing as pre
 
-from CNN_monoclasses import extraire_label , charger_data_et_labels
+from fonctions_preprocessing  import extraire_label , charger_data_et_labels
+
 
 
 path="/Users/elkaouniyasser/Brain_project/Brain_data/Training"
