@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+
+@author: elkaouniyasser
+"""
+
 import os
 from PIL import Image
 import numpy as np
@@ -5,59 +12,26 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D,AveragePooling2D, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Conv2D, BatchNormalization, Dropout, Flatten, Dense, Activation
+from keras.callbacks import ModelCheckpoint
+from tensorflow.keras.layers import  BatchNormalization, Dropout, Activation
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix, classification_report
 import matplotlib.pyplot as plt
 
 
+import fonctions_preprocessing as pre
+
+from fonctions_preprocessing  import extraire_label , charger_data_et_labels
+
+
 path="/Users/elkaouniyasser/Brain_project/Brain_data/Training"
-categories = os.listdir(path)  #
-data=[]
-def extraire_label(file_name):
-    # le label est toujours situé entre '-' et '_'
-    parts = file_name.split('-')
-    if len(parts) > 1:
-        label_part = parts[1]
-        label = label_part.split('_')[0]
-        return label
-    else:
-        return None
-    
-    
-desired_size=(256,256)
-images_=[]
-labels_=[]
-for category in categories:
-    path_of_label=os.path.join(path,category)
-    if os.path.isdir(path_of_label):
-        
-        for fichier in os.listdir(path_of_label):
-            
-            path_fichier=os.path.join(path_of_label,fichier)
-            
-            img = Image.open(os.path.join(path_of_label, fichier))
-
-            img = img.resize(desired_size) 
-            if img.mode != 'L':
-                img = img.convert('L')
-
-            img_array = np.array(img)
-
-            images_.append(img_array)
-            
-            if os.path.isfile(path_fichier):
-                label=extraire_label(fichier)
-                labels_.append(label)
-                if label:
-                    data.append((img_array,label,fichier))
-        
-images = np.array(images_)
 #data[1]
-
+images,labels_=charger_data_et_labels(path)
 image = Image.fromarray(images[0])
 image.show()
+
 
 def index_finder(liste, name: str):
     bad_label = []
@@ -154,8 +128,6 @@ history=model.history
 
 
 
-for layer in model.layers:
-    print(layer.name)
 
 
 # garphique
