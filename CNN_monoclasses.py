@@ -42,11 +42,53 @@ print("On utilise {}% des données d'entraînement .(paramètre: data_portion)".
 
 
 
+from typing import Callable
 
+<<<<<<< HEAD
 
 ''' Chargement des données et mise en forme'''
 
 images,labels_=pre.charger_data_et_labels(path,labels_monoclasses)
+=======
+def charger_data_et_labels(path_dossier_central, label_manager=None, taille_image=(256, 256), filtre='L'):
+    
+    categories = os.listdir(path_dossier_central) 
+    desired_size=taille_image #taille_image
+    images_=[]
+    labels_=[]
+    data=[]
+    for category in categories:
+        path_of_label=os.path.join(path,category)
+        if os.path.isdir(path_of_label):
+            
+            for fichier in os.listdir(path_of_label):
+                
+                path_fichier=os.path.join(path_of_label,fichier)
+                
+                img = Image.open(os.path.join(path_of_label, fichier))
+    
+                img = img.resize(desired_size) 
+                if img.mode != filtre:
+                    img = img.convert(filtre)
+    
+                img_array = np.array(img)
+    
+                images_.append(img_array)
+                
+                if os.path.isfile(path_fichier):
+                    label=extraire_label(fichier)
+                    labels_.append(label)
+                    if label:
+                        data.append((img_array,label,fichier))
+            
+    images = np.array(images_)
+    if label_manager :
+        labels_=label_manager(labels_)
+    return images,labels_
+
+
+images,labels_=charger_data_et_labels(path,labels_monocalsses)
+>>>>>>> origin/master
 
 
 from sklearn.preprocessing import OneHotEncoder

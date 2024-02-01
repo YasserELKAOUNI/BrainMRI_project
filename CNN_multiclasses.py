@@ -21,9 +21,15 @@ from sklearn.metrics import confusion_matrix, classification_report
 import matplotlib.pyplot as plt
 
 
+<<<<<<< HEAD
 import fonctions_preprocessing as pre
 
 from fonctions_preprocessing  import extraire_label , charger_data_et_labels
+=======
+
+
+from CNN_monoclasses import extraire_label , charger_data_et_labels
+>>>>>>> origin/master
 
 
 path="/Users/elkaouniyasser/Brain_project/Brain_data/Training"
